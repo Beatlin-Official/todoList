@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, TransitionGroup } from "vue";
+import { ref, onMounted, watch, computed, TransitionGroup } from "vue";
 import { Icon } from "@iconify/vue";
 import { uuid } from "vue-uuid";
 const todoData = ref([]);
@@ -7,10 +7,8 @@ const todoName = ref(null);
 const editingName = ref(null);
 const editingId = ref(null);
 const activity = ref(null);
-
 const showFilter = ref(false);
-const deleted = ref(false);
-const completed = ref(false);
+const filter = ref(null);
 const loading = ref(true);
 
 onMounted(() => {
@@ -63,6 +61,7 @@ const addTodo = (item) => {
 };
 const deleteTodo = (todo) => {
   const index = todoData.value.findIndex((item) => item.id == todo.id);
+  todo = { ...todo, uuid: uuid.v4() }; //因為串api導致uuid被洗掉，才這裡須重加
   todoData.value.splice(index, 1, todo);
   loading.value = false;
 };
@@ -82,54 +81,49 @@ const typingHandler = (e, todo) => {
 };
 
 const filterHandler = (state) => {
-  if (state === "Completed") {
-    completed.value = !completed.value;
-    deleted.value = false;
+  if (state == "Completed" && filter.value !== "Completed") {
+    filter.value = activity.value = state;
     return;
   }
-  if (state === "isDeleted") {
-    deleted.value = !deleted.value;
-    completed.value = false;
+  if (state == "isDeleted" && filter.value !== "isDeleted") {
+    filter.value = activity.value = state;
     return;
   }
+  activity.value = "";
+  filter.value = null;
+  console.log("null");
 };
 
-const filterTodo = computed(() => {
-  editingId.value = null;
-  if (completed.value == true && deleted.value !== true) {
-    return todoData.value.filter((todo) => {
-      return todo.completed == true && todo.isDeleted != true;
-    });
+const filteredTodos = computed(() => {
+  if (filter.value === "Completed") {
+    return todoData.value.filter(
+      (todo) => todo.completed === true && todo.isDeleted !== true
+    );
   }
-  if (deleted.value == true && completed.value !== true) {
-    return todoData.value.filter((todo) => {
-      return todo.isDeleted == true;
-    });
+
+  if (filter.value === "isDeleted") {
+    return todoData.value.filter((todo) => todo.isDeleted === true);
   }
-  return todoData.value.filter((todo) => {
-    return todo.isDeleted != true && todo.completed == false;
-  });
-});
-const activityPage = computed(() => {
-  if (deleted.value == true) return (activity.value = " / Trash");
-  if (completed.value == true) return (activity.value = " / Completed");
-  if (activity.value == null) return "";
+
+  return todoData.value.filter(
+    (todo) => todo.isDeleted !== true && todo.completed !== true
+  );
 });
 </script>
 
 <template>
   <div class="todoBox">
     <div class="topBox">
-      <h1 class="subtitle">TodoList{{ activityPage }}</h1>
+      <h1 class="subtitle">TodoList{{ activity }}</h1>
       <div class="toolBox">
         <div class="inputBox">
           <input
             v-model.trim="todoName"
             type="text"
-            placeholder="type your todo"
+            placeholder="Add your todo"
             @keyup.enter="addHandler"
           />
-          <button type="button" class="add" @click="addHandler">
+          <button type="button" class="add" @click="addHandler" title="add">
             <Icon icon="tabler:copy-plus-filled" />
           </button>
         </div>
@@ -142,6 +136,7 @@ const activityPage = computed(() => {
               type="button"
               class="filterCompleted"
               @click="filterHandler('Completed')"
+              title="completed"
             >
               <Icon icon="tabler:checkbox" />
             </button>
@@ -149,6 +144,7 @@ const activityPage = computed(() => {
               type="button"
               class="filtertrash"
               @click="filterHandler('isDeleted')"
+              title="isDeleted"
             >
               <Icon icon="tabler:trash" />
             </button>
@@ -157,14 +153,9 @@ const activityPage = computed(() => {
       </div>
     </div>
     <div class="listBox">
-      <Transition name="loading">
-        <div v-show="loading" class="loadingBox">
-          <p>Loading</p>
-          <Icon icon="tabler:loader" /></div
-      ></Transition>
       <div class="list">
         <Transition-group name="slide" tag="div">
-          <div class="item" v-for="todo of filterTodo" :key="todo.uuid">
+          <div class="item" v-for="todo of filteredTodos" :key="todo.uuid">
             <div class="nameBox">
               <input
                 v-model="editingName"
@@ -176,7 +167,12 @@ const activityPage = computed(() => {
               <span v-else class="name">{{ todo.todo }}</span>
             </div>
             <div class="btnBox" v-show="!todo.isDeleted">
-              <button @click="editTodoHandler(todo)" type="button" class="edit">
+              <button
+                @click="editTodoHandler(todo)"
+                type="button"
+                class="edit"
+                title="edit"
+              >
                 <Icon icon="tabler:edit" />
               </button>
               <button
@@ -184,10 +180,16 @@ const activityPage = computed(() => {
                 @click="finishedHandler(todo)"
                 type="button"
                 class="completed"
+                title="completed"
               >
                 <Icon icon="tabler:check" />
               </button>
-              <button @click="deleteHandler(todo)" type="button" class="delete">
+              <button
+                @click="deleteHandler(todo)"
+                type="button"
+                class="delete"
+                title="delete"
+              >
                 <Icon icon="tabler:minus" />
               </button>
             </div>
@@ -196,6 +198,12 @@ const activityPage = computed(() => {
         </Transition-group>
       </div>
     </div>
+
+    <Transition name="loading">
+      <div v-show="loading" class="loadingBox">
+        <p>Loading</p>
+        <Icon icon="tabler:loader" /></div
+    ></Transition>
   </div>
 </template>
 
@@ -216,6 +224,8 @@ input[type="text"] {
   border: none;
   outline: none;
   height: 30px;
+  margin-right: 5px;
+  padding: 0 8px;
 }
 .filterBox {
   display: flex;
@@ -227,12 +237,13 @@ input[type="text"] {
   padding: 0 10px;
 }
 .loadingBox {
-  position: absolute;
+  position: fixed;
   background: rgba(0, 0, 0, 0.5);
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
