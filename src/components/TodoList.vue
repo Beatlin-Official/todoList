@@ -1,0 +1,22 @@
+<script setup>
+import { TransitionGroup } from "vue";
+import BtnBox from "@/components/BtnBox.vue";
+const props = defineProps(["todos"]);
+const emit = defineEmits(["buttonStateChange"]);
+const handleButtonState = (state, todo) => {
+  emit("buttonStateChange", state, todo);
+};
+</script>
+
+<template>
+  <div class="list">
+    <Transition-group name="slide" tag="div">
+      <div class="item" v-for="todoItem of todos" :key="todoItem.uuid">
+        <slot name="nameBox" v-bind="todoItem"></slot>
+        <slot name="btnBox">
+          <BtnBox :todo="todoItem" @buttonState="handleButtonState"></BtnBox>
+        </slot>
+      </div>
+    </Transition-group>
+  </div>
+</template>

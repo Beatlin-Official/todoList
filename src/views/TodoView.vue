@@ -1,5 +1,8 @@
 <script setup>
-import { ref, onMounted, watch, computed, TransitionGroup } from "vue";
+import { ref, onMounted, computed } from "vue";
+import TodoInput from "@/components/TodoInput.vue";
+import FilterBox from "@/components/FilterBox.vue";
+import TodoList from "@/components/TodoList.vue";
 import { Icon } from "@iconify/vue";
 import { uuid } from "vue-uuid";
 const todoData = ref([]);
@@ -7,7 +10,6 @@ const todoName = ref(null);
 const editingName = ref(null);
 const editingId = ref(null);
 const activity = ref(null);
-const showFilter = ref(false);
 const filter = ref(null);
 const loading = ref(true);
 
@@ -75,9 +77,17 @@ const editTodoHandler = (todo) => {
 };
 const typingHandler = (e, todo) => {
   if (e !== "blur") return;
-  todo.todo = editingName.value.trim();
+  todoData.value = todoData.value.map((item) =>
+    item.id === todo.id ? { ...item, todo: editingName.value.trim() } : item
+  );
   editingId.value = null;
   editingName.value = null;
+};
+//管理todoitem 按鈕事件
+const clickBtnHandler = (state, todo) => {
+  if (state == "completed") finishedHandler(todo);
+  if (state == "delete") deleteHandler(todo);
+  if (state == "edit") editTodoHandler(todo);
 };
 
 const filterHandler = (state) => {
@@ -91,7 +101,6 @@ const filterHandler = (state) => {
   }
   activity.value = "";
   filter.value = null;
-  console.log("null");
 };
 
 const filteredTodos = computed(() => {
@@ -116,89 +125,33 @@ const filteredTodos = computed(() => {
     <div class="topBox">
       <h1 class="subtitle">TodoList{{ activity }}</h1>
       <div class="toolBox">
-        <div class="inputBox">
-          <input
-            v-model.trim="todoName"
-            type="text"
-            placeholder="Add your todo"
-            @keyup.enter="addHandler"
-          />
-          <button type="button" class="add" @click="addHandler" title="add">
-            <Icon icon="tabler:copy-plus-filled" />
-          </button>
-        </div>
-        <div class="filterBox">
-          <button @click="showFilter = !showFilter">
-            <Icon icon="tabler:filter" />
-          </button>
-          <div class="tabBox" v-show="showFilter">
-            <button
-              type="button"
-              class="filterCompleted"
-              @click="filterHandler('Completed')"
-              title="completed"
-            >
-              <Icon icon="tabler:checkbox" />
-            </button>
-            <button
-              type="button"
-              class="filtertrash"
-              @click="filterHandler('isDeleted')"
-              title="isDeleted"
-            >
-              <Icon icon="tabler:trash" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="listBox">
-      <div class="list">
-        <Transition-group name="slide" tag="div">
-          <div class="item" v-for="todo of filteredTodos" :key="todo.uuid">
-            <div class="nameBox">
-              <input
-                v-model="editingName"
-                v-if="todo.id === editingId"
-                @keyup.enter="$event.target.blur()"
-                @blur="typingHandler($event.type, todo)"
-                type="text"
-              />
-              <span v-else class="name">{{ todo.todo }}</span>
-            </div>
-            <div class="btnBox" v-show="!todo.isDeleted">
-              <button
-                @click="editTodoHandler(todo)"
-                type="button"
-                class="edit"
-                title="edit"
-              >
-                <Icon icon="tabler:edit" />
-              </button>
-              <button
-                v-show="!todo.completed"
-                @click="finishedHandler(todo)"
-                type="button"
-                class="completed"
-                title="completed"
-              >
-                <Icon icon="tabler:check" />
-              </button>
-              <button
-                @click="deleteHandler(todo)"
-                type="button"
-                class="delete"
-                title="delete"
-              >
-                <Icon icon="tabler:minus" />
-              </button>
-            </div>
-            <div class="date"></div>
-          </div>
-        </Transition-group>
+        <TodoInput
+          :name="todoName"
+          @update:name="($event) => (todoName = $event)"
+          @addHandler.enter="addHandler"
+        ></TodoInput>
+        <FilterBox @filterHandler="filterHandler"></FilterBox>
       </div>
     </div>
 
+    <div class="listBox">
+      <TodoList :todos="filteredTodos" @buttonStateChange="clickBtnHandler">
+        <template #nameBox="{ todo, id, isDeleted, completed }">
+          <div class="nameBox">
+            <input
+              v-model="editingName"
+              v-if="id === editingId"
+              @keyup.enter="$event.target.blur()"
+              @blur="typingHandler($event.type, { todo, id, uuid })"
+              type="text"
+            />
+            <span v-else class="name">{{ todo }}</span>
+          </div>
+        </template>
+        <!-- btnbox -->
+        <div class="date"></div>
+      </TodoList>
+    </div>
     <Transition name="loading">
       <div v-show="loading" class="loadingBox">
         <p>Loading</p>
@@ -207,7 +160,7 @@ const filteredTodos = computed(() => {
   </div>
 </template>
 
-<style scoped>
+<style>
 .subtitle {
   font-size: 25px;
   font-weight: 500;
