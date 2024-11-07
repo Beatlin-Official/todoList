@@ -113,9 +113,3 @@ onMounted(() => {
     </div>
   </main>
 </template>
-
-<style>
-button.current {
-  background: var(--vt-c-text-dark-2);
-}
-</style>
