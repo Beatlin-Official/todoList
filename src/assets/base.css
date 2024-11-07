@@ -1,5 +1,4 @@
 /* color palette from <https://github.com/vuejs/theme> */
-
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
 
 :root {
@@ -64,11 +63,9 @@
 body {
   color: var(--color-text);
   background: var(--color-background);
-  transition:
-    color 0.5s,
-    background-color 0.5s;
+  transition: color 0.5s, background-color 0.5s;
   line-height: 1.6;
-  font-family: 'Manrope';
+  font-family: "Manrope";
   font-size: 15px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

@@ -11,7 +11,11 @@ const handleButtonState = (state, todo) => {
 <template>
   <div class="list">
     <Transition-group name="slide" tag="div">
-      <div class="item" v-for="todoItem of todos" :key="todoItem.uuid">
+      <div
+        v-for="todoItem of todos"
+        :key="todoItem.uuid"
+        class="hover:bg-neutral-800 flex items-center width-full p-2 min-h-14 border-b border-neutral-800"
+      >
         <slot name="nameBox" v-bind="todoItem"></slot>
         <slot name="btnBox">
           <BtnBox :todo="todoItem" @buttonState="handleButtonState"></BtnBox>

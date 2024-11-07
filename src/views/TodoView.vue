@@ -121,74 +121,58 @@ const filteredTodos = computed(() => {
 </script>
 
 <template>
-  <div class="todoBox">
-    <div class="topBox">
-      <h1 class="subtitle">TodoList{{ activity }}</h1>
-      <div class="toolBox">
-        <TodoInput
-          :name="todoName"
-          @update:name="($event) => (todoName = $event)"
-          @addHandler.enter="addHandler"
-        ></TodoInput>
-        <FilterBox @filterHandler="filterHandler"></FilterBox>
+  <main>
+    <div class="todoBox">
+      <div class="topBox">
+        <h1 class="text-3xl font-medium pb-2 mb-5 border-b border-gray-700">
+          TodoList{{ activity }}
+        </h1>
+        <div class="flex items-center mb-5">
+          <TodoInput
+            class="mr-auto flex items-center"
+            :name="todoName"
+            @update:name="($event) => (todoName = $event)"
+            @addHandler.enter="addHandler"
+          ></TodoInput>
+          <FilterBox
+            class="flex"
+            @filterHandler="filterHandler"
+            :activity="activity"
+          ></FilterBox>
+        </div>
       </div>
-    </div>
 
-    <div class="listBox">
-      <TodoList :todos="filteredTodos" @buttonStateChange="clickBtnHandler">
-        <template #nameBox="{ todo, id, isDeleted, completed }">
-          <div class="nameBox">
-            <input
-              v-model="editingName"
-              v-if="id === editingId"
-              @keyup.enter="$event.target.blur()"
-              @blur="typingHandler($event.type, { todo, id, uuid })"
-              type="text"
-            />
-            <span v-else class="name">{{ todo }}</span>
-          </div>
-        </template>
-        <!-- btnbox -->
-        <div class="date"></div>
-      </TodoList>
+      <div class="relative h-96 overflow-y-auto">
+        <TodoList :todos="filteredTodos" @buttonStateChange="clickBtnHandler">
+          <template #nameBox="{ todo, id, isDeleted, completed }">
+            <div
+              class="max-w-7xl pr-5 mr-auto overflow-hidden whitespace-nowrap text-ellipsi font-light"
+            >
+              <input
+                v-model="editingName"
+                v-if="id === editingId"
+                @keyup.enter="$event.target.blur()"
+                @blur="typingHandler($event.type, { todo, id, uuid })"
+                type="text"
+                class="block w-90 mr-2 px-2 py-1 border-0 border-gray-100 rounded text-white bg-neutral-900 focus:border-white active:border-white"
+              />
+              <span v-else class="name">{{ todo }}</span>
+            </div>
+          </template>
+          <!-- btnbox -->
+          <div class="date"></div>
+        </TodoList>
+      </div>
+      <Transition name="loading">
+        <div v-show="loading" class="loadingBox">
+          <p>Loading</p>
+          <Icon icon="tabler:loader" /></div
+      ></Transition>
     </div>
-    <Transition name="loading">
-      <div v-show="loading" class="loadingBox">
-        <p>Loading</p>
-        <Icon icon="tabler:loader" /></div
-    ></Transition>
-  </div>
+  </main>
 </template>
 
 <style>
-.subtitle {
-  font-size: 25px;
-  font-weight: 500;
-}
-.toolBox {
-  display: flex;
-  align-items: center;
-  margin-bottom: 30px;
-}
-.inputBox {
-  margin-right: auto;
-}
-input[type="text"] {
-  border: none;
-  outline: none;
-  height: 30px;
-  margin-right: 5px;
-  padding: 0 8px;
-}
-.filterBox {
-  display: flex;
-}
-.listBox {
-  position: relative;
-  overflow-y: auto;
-  height: 70vh;
-  padding: 0 10px;
-}
 .loadingBox {
   position: fixed;
   background: rgba(0, 0, 0, 0.5);
@@ -229,35 +213,5 @@ input[type="text"] {
 .slide-leave-to {
   transform: translateY(-20px);
   opacity: 0;
-}
-
-.item {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  padding: 5px 0;
-  min-height: 45px;
-}
-.nameBox {
-  max-width: 80%;
-  padding-right: 20px;
-  margin-right: auto;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-weight: 300;
-}
-button {
-  border: none;
-  outline: none;
-  margin: 0 2px;
-  padding: 8px;
-  border-radius: 5px;
-  background: #ffffff;
-  transition: all 0.2s ease-in-out;
-  cursor: pointer;
-}
-button:hover {
-  background: var(--vt-c-text-dark-2);
 }
 </style>

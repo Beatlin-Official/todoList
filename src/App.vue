@@ -1,55 +1,29 @@
 <script setup>
 import { RouterLink, RouterView } from "vue-router";
-import HelloWorld from "./components/HelloWorld.vue";
 </script>
 
 <template>
-  <header>
-    <div class="wrapper">
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/todoList">Todo</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <div class="w-full max-w-4xl mx-auto font-normal">
+    <header class="leading-6 w-full">
+      <div class="wrapper">
+        <nav class="w-full mt-5 mb-6 text-center text-s">
+          <RouterLink
+            activeClass="text-green-600 hover:underline ease-in-out"
+            class="px-5 py-3 mr-2 hover:text-white hover:underline hover:bg-gray-800 rounded transition-all duration-200"
+            to="/"
+            >Todo</RouterLink
+          >
+          <RouterLink
+            activeClass="text-green-600 hover:underline ease-in-out"
+            class="px-5 py-3 hover:text-white hover:underline hover:bg-gray-800 rounded transition-all duration-200"
+            to="/handbook"
+            >Handbook</RouterLink
+          >
+        </nav>
+      </div>
+    </header>
+    <RouterView
+      class="transition-all duration-200 border border-gray-700 p-5 rounded-lg"
+    />
+  </div>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-  width: 100%;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: hsla(160, 100%, 37%, 1);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-  color: var(--color-text);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-</style>

@@ -12,8 +12,8 @@ const buttonClick = (state, todo) => {
     <button
       @click="buttonClick('edit', todo)"
       type="button"
-      class="edit"
       title="edit"
+      class="mx-1 p-2 rounded cursor-pointer bg-gray-600 transition-all duration-600 hover:bg-gray-500"
     >
       <Icon icon="tabler:edit" />
     </button>
@@ -21,16 +21,16 @@ const buttonClick = (state, todo) => {
       v-show="!todo.completed"
       @click="buttonClick('completed', todo)"
       type="button"
-      class="completed"
       title="completed"
+      class="mx-1 p-2 rounded cursor-pointer bg-teal-600 transition-all duration-600 hover:bg-teal-700"
     >
       <Icon icon="tabler:check" />
     </button>
     <button
       @click="buttonClick('delete', todo)"
       type="button"
-      class="delete"
       title="delete"
+      class="mx-1 p-2 rounded cursor-pointer bg-red-500 transition-all duration-600 hover:bg-red-600"
     >
       <Icon icon="tabler:minus" />
     </button>

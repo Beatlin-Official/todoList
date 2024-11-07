@@ -1,18 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import TodoView from '../views/TodoView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView
+      name: 'Todo',
+      component: TodoView
     },
     {
-      path: '/todoList',
-      name: 'todo',
-      component: () => import('../views/TodoView.vue')
+      path: '/handbook/:slug(\\d+)',//僅匹配數字
+      name: 'Pokemon',
+      strict: true,
+      component: () => import('../views/PokemonView.vue'),
+    },
+    {
+      path: '/handbook',
+      name: 'Handbook',
+      component: () => import('../views/HandbookView.vue'),
     }
   ]
 })
