@@ -1,12 +1,21 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { Icon } from "@iconify/vue";
+import { Pokedex } from "pokeapi-js-wrapper";
+
+const loading = ref(true);
+const P = new Pokedex();
+const interval = {
+  offset: 0,
+  limit: 1000,
+};
 const text = ref(null);
 const pokemons = ref([]);
 const urlIdLookup = ref({});
 const imgData = ref([]);
 const curPage = ref(1);
-const pageSize = 15;
+const pageSize = 20;
+
 const filteredPokemon = computed(() => UpdatePokemon());
 const UpdatePokemon = () => {
   if (text.value == "" || text.value == null) return pokemons.value;
@@ -14,6 +23,13 @@ const UpdatePokemon = () => {
   curPage.value = 1;
   return pokemons.value.filter((pokemon) => pokemon.name.includes(texting));
 };
+const pokemonImgData = computed(() => {
+  const imageData = {};
+  imgData.value.forEach((item) => {
+    imageData[item.name] = item.sprites.other.showdown.front_default;
+  });
+  return imageData;
+});
 const getPageData = computed(() => {
   const startIdx = (curPage.value - 1) * pageSize;
   const endIdx = startIdx + pageSize;
@@ -42,16 +58,41 @@ const prevPage = () => {
 const nextPage = () => {
   if (curPage.value < totalPages.value) curPage.value++;
 };
-
 onMounted(() => {
-  fetch("https://pokeapi.co/api/v2/pokemon?limit=1000&offset=0")
-    .then((res) => res.json())
-    .then((data) => {
-      pokemons.value = data.results;
-      urlIdLookup.value = data.results.reduce(
-        (acc, cur, idx) => (acc = { ...acc, [cur.name]: idx + 1 }),
-        {}
-      );
+  const promise = (step) => {
+    return new Promise((resolve, reject) => {
+      //取清單資料
+      if (step === 1) {
+        P.getPokemonsList(interval).then(function (res) {
+          pokemons.value = res.results;
+          urlIdLookup.value = res.results.reduce(
+            (acc, cur, idx) => (acc = { ...acc, [cur.name]: idx + 1 }),
+            {}
+          );
+          resolve(`step ${step} success`);
+        });
+      }
+      //取得單個詳細資料
+      if (step === 2) {
+        const arr = pokemons.value.map(
+          (pokemon) => urlIdLookup.value[pokemon.name]
+        );
+        P.getPokemonByName(arr).then((response) => {
+          imgData.value = response;
+          loading.value = false;
+          resolve(`step ${step} success`);
+        });
+      }
+    });
+  };
+
+  promise(1)
+    .then((success) => {
+      console.log(success);
+      return promise(2);
+    })
+    .catch((fail) => {
+      console.log(fail);
     });
 });
 </script>
@@ -71,10 +112,24 @@ onMounted(() => {
     </div>
 
     <div>
-      <div id="cardList" class="grid grid-cols-4">
-        <div id="cardItem" v-for="pokemon of getPageData" :key="pokemon.idx">
-          <RouterLink :to="`/handbook/${urlIdLookup[pokemon.name]}`">
-            {{ pokemon.name }}
+      <div class="grid grid-cols-4 grid-rows-5 gap-2 min-h-80">
+        <div
+          class="text-center border border-gray-500 rounded hover:bg-green-800 hover:border-green-500 transition-all"
+          v-for="pokemon of getPageData"
+          :key="pokemon.idx"
+        >
+          <RouterLink
+            class="block p-2"
+            :to="`/handbook/${urlIdLookup[pokemon.name]}`"
+          >
+            <div class="max-h-12 mx-auto">
+              <img
+                class="object-contain max-h-12 mx-auto"
+                :src="pokemonImgData[pokemon.name]"
+                :alt="pokemon.name"
+              />
+            </div>
+            <div>{{ pokemon.name }}</div>
           </RouterLink>
         </div>
         <div v-if="getPageData.length == 0">
@@ -83,19 +138,28 @@ onMounted(() => {
       </div>
     </div>
 
-    <div id="pageBox" class="flex mx-auto w-full justify-center items-center">
+    <Transition name="loading">
+      <div v-show="loading" class="loadingBox">
+        <p>Loading</p>
+        <Icon icon="tabler:loader" /></div
+    ></Transition>
+
+    <div
+      id="pageBox"
+      class="flex mx-auto mt-10 w-full justify-center items-center"
+    >
       <div class="max-w-24 w-full flex justify-center">
         <button
           @click="curPage = 1"
           v-show="curPage !== 1"
-          class="mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700"
+          class="mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
         >
           <Icon icon="tabler:square-chevrons-left" />
         </button>
         <button
           @click="prevPage"
           v-show="curPage !== 1"
-          class="mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700"
+          class="mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
         >
           <Icon icon="tabler:square-chevron-left" />
         </button>
@@ -116,14 +180,14 @@ onMounted(() => {
         <button
           @click="nextPage"
           v-show="curPage !== totalPages && totalPages !== 0"
-          class="mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700"
+          class="mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
         >
           <Icon icon="tabler:square-chevron-right" />
         </button>
         <button
           @click="curPage = totalPages"
           v-show="curPage !== totalPages && totalPages !== 0"
-          class="mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700"
+          class="mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 opacity-45 hover:border-gray-700 hover:opacity-100"
         >
           <Icon icon="tabler:square-chevrons-right" />
         </button>
