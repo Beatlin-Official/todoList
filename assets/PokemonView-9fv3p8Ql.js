@@ -1,0 +1,1 @@
+import{r as t,c as o,a,t as r,F as n,o as l}from"./index-BAw3GCCo.js";const u={__name:"PokemonView",setup(m){return t([]),(s,e)=>(l(),o(n,null,[e[0]||(e[0]=a("h1",{class:"subtitle"},"pokemon",-1)),a("h3",null,r(s.$route.params.slug),1)],64))}};export{u as default};
