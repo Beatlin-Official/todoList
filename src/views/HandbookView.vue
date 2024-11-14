@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from "vue";
 import { Icon } from "@iconify/vue";
 import { Pokedex } from "pokeapi-js-wrapper";
+import { RouterLink } from "vue-router";
 
 const loading = ref(true);
 const P = new Pokedex();
@@ -80,7 +81,7 @@ onMounted(() => {
         P.getPokemonByName(arr).then((response) => {
           imgData.value = response;
           loading.value = false;
-          resolve(`step ${step} success`);
+          console.log(`step ${step} success`);
         });
       }
     });
@@ -110,26 +111,28 @@ onMounted(() => {
         class="block mr-2 px-2 py-1 rounded text-gray-900"
       />
     </div>
-
     <div>
       <div class="grid grid-cols-4 grid-rows-5 gap-2 min-h-80">
         <div
-          class="text-center border border-gray-500 rounded hover:bg-green-800 hover:border-green-500 transition-all"
+          class="border border-gray-500 rounded hover:bg-green-800 hover:border-green-500 transition-all"
           v-for="pokemon of getPageData"
           :key="pokemon.idx"
         >
           <RouterLink
-            class="block p-2"
-            :to="`/handbook/${urlIdLookup[pokemon.name]}`"
+            class="flex flex-col h-full justify-center items-center p-3"
+            :to="{
+              name: 'Pokemon',
+              params: { slug: `${urlIdLookup[pokemon.name]}` },
+            }"
           >
-            <div class="max-h-12 mx-auto">
+            <div class="max-h-12 mx-auto mb-auto">
               <img
                 class="object-contain max-h-12 mx-auto"
                 :src="pokemonImgData[pokemon.name]"
                 :alt="pokemon.name"
               />
             </div>
-            <div>{{ pokemon.name }}</div>
+            <div class="text-center pt-2">{{ pokemon.name }}</div>
           </RouterLink>
         </div>
         <div v-if="getPageData.length == 0">
