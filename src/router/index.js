@@ -17,16 +17,13 @@ const router = createRouter({
       path: '/handbook/',//僅匹配數字
       name: 'Handbook',
       component: HandbookView,
+      alias:['/handbook'],
       // redirect:'/handbook/1',
       // children:[{
       //   path:':page(\\d+)',
       //   name: 'HandBookPage',
       //   component: PokemonListView
       // }]
-    },
-    {
-      alias:['/handbook'],
-      redirect:'/handbook/1',
     },
     {
       path: '/pokemon/:slug(\\d+)',//僅匹配數字
