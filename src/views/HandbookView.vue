@@ -3,17 +3,16 @@ import { ref, onMounted, computed } from "vue";
 import { Icon } from "@iconify/vue";
 import { Pokedex } from "pokeapi-js-wrapper";
 import { RouterLink } from "vue-router";
-
 const loading = ref(true);
 const P = new Pokedex();
 const interval = {
   offset: 0,
-  limit: 1000,
+  limit: 100,
 };
+
+const totalPokemons = 900;
 const text = ref(null);
 const pokemons = ref([]);
-const urlIdLookup = ref({});
-const imgData = ref([]);
 const curPage = ref(1);
 const pageSize = 20;
 
@@ -21,16 +20,8 @@ const filteredPokemon = computed(() => UpdatePokemon());
 const UpdatePokemon = () => {
   if (text.value == "" || text.value == null) return pokemons.value;
   let texting = text.value.toLowerCase();
-  curPage.value = 1;
   return pokemons.value.filter((pokemon) => pokemon.name.includes(texting));
 };
-const pokemonImgData = computed(() => {
-  const imageData = {};
-  imgData.value.forEach((item) => {
-    imageData[item.name] = item.sprites.other.showdown.front_default;
-  });
-  return imageData;
-});
 const getPageData = computed(() => {
   const startIdx = (curPage.value - 1) * pageSize;
   const endIdx = startIdx + pageSize;
@@ -59,42 +50,37 @@ const prevPage = () => {
 const nextPage = () => {
   if (curPage.value < totalPages.value) curPage.value++;
 };
-onMounted(() => {
-  const promise = (step) => {
-    return new Promise((resolve, reject) => {
-      //取清單資料
-      if (step === 1) {
-        P.getPokemonsList(interval).then(function (res) {
-          pokemons.value = res.results;
-          urlIdLookup.value = res.results.reduce(
-            (acc, cur, idx) => (acc = { ...acc, [cur.name]: idx + 1 }),
-            {}
-          );
-          resolve(`step ${step} success`);
-        });
+onMounted(async () => {
+  async function getData() {
+    if (pokemons.value.length >= totalPokemons) return false;
+    const arr = Array.from({ length: 100 }, (_, i) => i + 1 + interval.offset);
+    const res = await P.getPokemonByName(arr);
+    return res;
+  }
+  async function pushData(res) {
+    pokemons.value.push(...res);
+    loading.value = false;
+    return pokemons.value.length < totalPokemons;
+  }
+  async function updateInterval() {
+    interval.offset += interval.limit;
+  }
+  try {
+    let shouldContinue = true;
+    while (shouldContinue) {
+      const res = await getData();
+      if (shouldContinue) {
+        await pushData(res);
+        await updateInterval();
       }
-      //取得單個詳細資料
-      if (step === 2) {
-        const arr = pokemons.value.map(
-          (pokemon) => urlIdLookup.value[pokemon.name]
-        );
-        P.getPokemonByName(arr).then((response) => {
-          imgData.value = response;
-          loading.value = false;
-          console.log(`step ${step} success`);
-        });
+      if (!shouldContinue) {
+        console.log("data all done");
+        break;
       }
-    });
-  };
-
-  promise(1)
-    .then((success) => {
-      console.log(success);
-      return promise(2);
-    })
-    .catch((fail) => {
-      console.log(fail);
-    });
+    }
+  } catch (error) {
+    console.log("error:", error);
+  }
 });
 </script>
 
@@ -116,37 +102,34 @@ onMounted(() => {
         <div
           class="border border-gray-500 rounded hover:bg-green-800 hover:border-green-500 transition-all"
           v-for="pokemon of getPageData"
-          :key="pokemon.idx"
+          :key="pokemon.id"
         >
           <RouterLink
             class="flex flex-col h-full justify-center items-center p-3"
             :to="{
               name: 'Pokemon',
-              params: { slug: `${urlIdLookup[pokemon.name]}` },
+              params: { slug: `${pokemon.id}` },
             }"
           >
             <div class="max-h-12 mx-auto mb-auto">
               <img
                 class="object-contain max-h-12 mx-auto"
-                :src="pokemonImgData[pokemon.name]"
+                :src="pokemon.sprites.other.showdown.front_default"
                 :alt="pokemon.name"
               />
+
+              <div class="animate-pulse" v-if="!pokemon">
+                <div class="rounded-full bg-slate-700 h-10 w-10"></div>
+              </div>
             </div>
             <div class="text-center pt-2">{{ pokemon.name }}</div>
           </RouterLink>
         </div>
         <div v-if="getPageData.length == 0">
-          <p>Please Search again</p>
+          <p>No data</p>
         </div>
       </div>
     </div>
-
-    <Transition name="loading">
-      <div v-show="loading" class="loadingBox">
-        <p>Loading</p>
-        <Icon icon="tabler:loader" /></div
-    ></Transition>
-
     <div
       id="pageBox"
       class="flex mx-auto mt-10 w-full justify-center items-center"

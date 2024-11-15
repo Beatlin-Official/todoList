@@ -1,8 +1,10 @@
 <script setup>
 import { computed, onBeforeMount, ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, RouterLink } from "vue-router";
 import { Icon } from "@iconify/vue";
 import { Pokedex } from "pokeapi-js-wrapper";
+
+const loading = ref(true);
 const route = useRoute();
 const id = ref(0);
 const pokemon = ref({});
@@ -27,23 +29,10 @@ const upperName = (name) => {
 const customColor = (type) => {
   return `bg-${type}`;
 };
-const changePage = (e) => {
-  e.preventDefault();
-  const button = e.target.closest("button");
-  const target = button.id;
-  if (target) {
-    route.push({
-      name: route.name,
-      params: {
-        slug: target,
-      },
-    });
-  }
-};
-
-onBeforeMount(async () => {
+const UpdateData = async () => {
   async function getId() {
     id.value = route.params.slug;
+    loading.value = true;
     return id.value;
   }
   async function getData(pokemonId) {
@@ -54,18 +43,30 @@ onBeforeMount(async () => {
       prevPokemon.value = { ...res[0] };
       pokemon.value = { ...res[1] };
       nextPokemon.value = { ...res[2] };
-      return pokemon.value;
     } catch (error) {
       throw error;
     }
   }
   try {
     const pokemonId = await getId();
-    const pokemonData = await getData(pokemonId);
+    await getData(pokemonId);
+    loading.value = false;
   } catch (error) {
     console.log("get data error", error);
   }
+};
+
+onBeforeMount(() => {
+  UpdateData();
 });
+
+watch(
+  route,
+  () => {
+    UpdateData();
+  },
+  { immediate: true }
+);
 </script>
 
 <template v-if="pokemon">
@@ -96,6 +97,9 @@ onBeforeMount(async () => {
             :alt="pokemon.name"
             v-if="pokemon.sprites"
           />
+          <div v-else class="animate-pulse flex space-x-4">
+            <div class="rounded-full bg-slate-700 h-10 w-10"></div>
+          </div>
         </div>
       </div>
       <div class="w-full">
@@ -126,30 +130,29 @@ onBeforeMount(async () => {
           </table>
       </div>
     </div>
-    
     <div
       id="pageBox"
       class="flex mx-auto mt-10 w-full justify-center items-center"
     >
-      <div class="max-w-32 w-full mr-2" v-if="prevPokemon && prevPokemon.id">
+      <div class="max-w-40 w-full mr-2" v-if="prevPokemon && prevPokemon.id">
+        <RouterLink :to="{ name:'Pokemon',params:{slug:`${Number(id)-1}`} }">
         <button
-          :id="prevPokemon.id"
-          @click="changePage($event)"
           class="w-full flex justify-between items-center  mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
         >
           <Icon icon="tabler:square-chevron-left" />
           <p class="ml-2">{{ prevPokemon.name }}</p>
         </button>
+      </RouterLink>
       </div>
-      <div class="max-w-32 w-full " v-if="nextPokemon && nextPokemon.id">
+      <div class="max-w-40 w-full " v-if="nextPokemon && nextPokemon.id">
+        <RouterLink :to="{ name:'Pokemon',params:{slug:`${Number(id)+1}`} }">
         <button
-          :id="nextPokemon.id"
-          @click="changePage($event)"
           class="w-full flex justify-between items-center mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
         >
         <p class="mr-2">{{ nextPokemon.name }}</p>
           <Icon icon="tabler:square-chevron-right" />
         </button>
+      </RouterLink>
       </div>
     </div>
   </main>

@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink, RouterView } from "vue-router";
+import Loading from "@/components/Loading.vue";
 </script>
 
 <template>
@@ -10,13 +11,13 @@ import { RouterLink, RouterView } from "vue-router";
           <RouterLink
             activeClass="text-green-600 hover:underline ease-in-out"
             class="px-5 py-3 mr-2 hover:text-white hover:underline hover:bg-gray-800 rounded transition-all duration-200"
-            to="/"
+            :to="{ name: 'Todo' }"
             >Todo</RouterLink
           >
           <RouterLink
             activeClass="text-green-600 hover:underline ease-in-out"
             class="px-5 py-3 hover:text-white hover:underline hover:bg-gray-800 rounded transition-all duration-200"
-            to="/handbook"
+            :to="{ name: 'Handbook' }"
             >Handbook</RouterLink
           >
         </nav>
@@ -26,4 +27,5 @@ import { RouterLink, RouterView } from "vue-router";
       class="transition-all duration-200 border border-gray-700 p-5 rounded-lg"
     />
   </div>
+  <Loading></Loading>
 </template>
