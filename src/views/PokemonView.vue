@@ -3,8 +3,11 @@ import { computed, onBeforeMount, ref, watch } from "vue";
 import { useRoute, RouterLink } from "vue-router";
 import { Icon } from "@iconify/vue";
 import { Pokedex } from "pokeapi-js-wrapper";
+import { useLoadingStore } from "@/stores/loading";
+import { storeToRefs } from "pinia";
+const loadingStore = useLoadingStore();
+const { loading } = storeToRefs(loadingStore);
 
-const loading = ref(true);
 const route = useRoute();
 const id = ref(0);
 const pokemon = ref({});
@@ -31,18 +34,24 @@ const customColor = (type) => {
 };
 const UpdateData = async () => {
   async function getId() {
-    id.value = route.params.slug;
+    id.value = Number(route.params.slug);
     loading.value = true;
     return id.value;
   }
   async function getData(pokemonId) {
+    const Id = Number(pokemonId);
     try {
-      const prev = Number(pokemonId) - 1;
-      const next = Number(pokemonId) + 1;
-      const res = await P.getPokemonByName([prev, pokemonId, next]);
-      prevPokemon.value = { ...res[0] };
+      const prev = Id === 1 ? "" : Number(Id) - 1;
+      const next = Id === 900 ? "" : Number(Id) + 1;
+      const res = await P.getPokemonByName([prev, Id, next]);
       pokemon.value = { ...res[1] };
-      nextPokemon.value = { ...res[2] };
+      prev === ""
+        ? (prevPokemon.value = {})
+        : (prevPokemon.value = { ...res[0] });
+
+      next === ""
+        ? (nextPokemon.value = {})
+        : (nextPokemon.value = { ...res[2] });
     } catch (error) {
       throw error;
     }
@@ -137,10 +146,10 @@ watch(
       <div class="max-w-40 w-full mr-2" v-if="prevPokemon && prevPokemon.id">
         <RouterLink :to="{ name:'Pokemon',params:{slug:`${Number(id)-1}`} }">
         <button
-          class="w-full flex justify-between items-center  mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
+          class="w-full flex justify-between items-center mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
         >
           <Icon icon="tabler:square-chevron-left" />
-          <p class="ml-2">{{ prevPokemon.name }}</p>
+          <p class="maxxsm:overflow-hidden maxxsm:whitespace-nowrap maxxsm:text-ellipsis maxxsm:text-sm ml-2">{{ prevPokemon.name }}</p>
         </button>
       </RouterLink>
       </div>
@@ -149,7 +158,7 @@ watch(
         <button
           class="w-full flex justify-between items-center mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
         >
-        <p class="mr-2">{{ nextPokemon.name }}</p>
+        <p class="maxxsm:overflow-hidden maxxsm:whitespace-nowrap maxxsm:text-ellipsis maxxsm:text-sm mr-2">{{ nextPokemon.name }}</p>
           <Icon icon="tabler:square-chevron-right" />
         </button>
       </RouterLink>

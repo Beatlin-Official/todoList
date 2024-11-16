@@ -14,7 +14,7 @@ const handleButtonState = (state, todo) => {
       <div
         v-for="todoItem of todos"
         :key="todoItem.uuid"
-        class="hover:bg-neutral-800 flex items-center width-full p-2 min-h-14 border-b border-neutral-800"
+        class="maxsm:pl-0 hover:bg-neutral-800 flex items-center width-full p-2 min-h-14 border-b border-neutral-800"
       >
         <slot name="nameBox" v-bind="todoItem"></slot>
         <slot name="btnBox">

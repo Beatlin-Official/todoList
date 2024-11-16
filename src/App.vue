@@ -4,7 +4,7 @@ import Loading from "@/components/Loading.vue";
 </script>
 
 <template>
-  <div class="w-full max-w-4xl mx-auto font-normal">
+  <div class="w-full max-w-4xl mx-auto px-6 font-normal maxxsm:px-3">
     <header class="leading-6 w-full">
       <div class="wrapper">
         <nav class="w-full mt-5 mb-6 text-center text-s">
@@ -24,7 +24,7 @@ import Loading from "@/components/Loading.vue";
       </div>
     </header>
     <RouterView
-      class="transition-all duration-200 border border-gray-700 p-5 rounded-lg"
+      class="transition-all duration-200 border border-gray-700 p-5 rounded-lg maxsm:px-4 maxxsm:p-3"
     />
   </div>
   <Loading></Loading>

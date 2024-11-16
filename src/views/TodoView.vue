@@ -1,19 +1,22 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
+import { storeToRefs } from "pinia";
+import { useLoadingStore } from "@/stores/loading.js";
 import TodoInput from "@/components/TodoInput.vue";
 import FilterBox from "@/components/FilterBox.vue";
 import TodoList from "@/components/TodoList.vue";
-import { Icon } from "@iconify/vue";
 import { uuid } from "vue-uuid";
 const todoData = ref([]);
 const todoName = ref(null);
 const editingName = ref(null);
 const editingId = ref(null);
 const activity = ref(null);
+const activityStyle = ref("");
 const filter = ref(null);
-const loading = ref(true);
-
+const LoadingStore = useLoadingStore();
+const { loading } = storeToRefs(LoadingStore);
 onMounted(() => {
+  loading.value = true;
   fetch("https://dummyjson.com/todos")
     .then((res) => res.json())
     .then((req) => {
@@ -93,10 +96,12 @@ const clickBtnHandler = (state, todo) => {
 const filterHandler = (state) => {
   if (state == "Completed" && filter.value !== "Completed") {
     filter.value = activity.value = state;
+    activityStyle.value = "bg-teal-600";
     return;
   }
   if (state == "isDeleted" && filter.value !== "isDeleted") {
     filter.value = activity.value = state;
+    activityStyle.value = "bg-red-500";
     return;
   }
   activity.value = "";
@@ -125,17 +130,22 @@ const filteredTodos = computed(() => {
     <div class="todoBox">
       <div class="topBox">
         <h1 class="text-3xl font-medium pb-2 mb-5 border-b border-gray-700">
-          TodoList{{ activity }}
+          TodoList<span
+            class="text-sm px-1 ml-1 rounded"
+            :class="activityStyle"
+            v-if="activity"
+            >{{ activity }}</span
+          >
         </h1>
-        <div class="flex items-center mb-5">
+        <div class="maxxsm:flex-col maxxsm:mb-2 flex items-center mb-5">
           <TodoInput
-            class="mr-auto flex items-center"
+            class="maxxsm:w-full maxsm:mr-0 maxxsm:mb-2 mr-auto flex items-center"
             :name="todoName"
             @update:name="($event) => (todoName = $event)"
             @addHandler.enter="addHandler"
           ></TodoInput>
           <FilterBox
-            class="flex"
+            class="flex maxsm:ml-auto"
             @filterHandler="filterHandler"
             :activity="activity"
           ></FilterBox>
@@ -146,7 +156,7 @@ const filteredTodos = computed(() => {
         <TodoList :todos="filteredTodos" @buttonStateChange="clickBtnHandler">
           <template #nameBox="{ todo, id, isDeleted, completed }">
             <div
-              class="max-w-7xl pr-5 mr-auto overflow-hidden whitespace-nowrap text-ellipsi font-light"
+              class="maxsm:grow maxsm:mr-0 max-w-7xl pr-5 mr-auto overflow-hidden whitespace-nowrap text-ellipsis font-light"
             >
               <input
                 v-model="editingName"
@@ -154,7 +164,7 @@ const filteredTodos = computed(() => {
                 @keyup.enter="$event.target.blur()"
                 @blur="typingHandler($event.type, { todo, id, uuid })"
                 type="text"
-                class="block w-90 mr-2 px-2 py-1 border-0 border-gray-100 rounded text-white bg-neutral-900 focus:border-white active:border-white"
+                class="maxsm:w-full w-96 mr-2 px-2 py-1 border-0 border-gray-100 rounded text-white bg-stone-700 focus:border-none active:border-white"
               />
               <span v-else class="name">{{ todo }}</span>
             </div>

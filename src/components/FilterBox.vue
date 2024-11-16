@@ -10,7 +10,7 @@ const emit = defineEmits(["filterHandler"]);
 <template>
   <div class="filterBox">
     <button
-      class="mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700"
+      class="maxsm:ml-1 ml-2 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700"
       @click="showFilter = !showFilter"
     >
       <Icon icon="tabler:filter" />
@@ -18,7 +18,7 @@ const emit = defineEmits(["filterHandler"]);
     <div class="tabBox" v-show="showFilter">
       <button
         type="button"
-        class="mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700"
+        class="maxsm:ml-1 ml-2 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700"
         :class="{ 'bg-gray-700': activity === 'Completed' }"
         title="completed"
         @click="$emit('filterHandler', 'Completed')"
@@ -27,7 +27,7 @@ const emit = defineEmits(["filterHandler"]);
       </button>
       <button
         type="button"
-        class="mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700"
+        class="maxsm:ml-1 ml-2 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700"
         title="isDeleted"
         :class="{ 'bg-gray-700': activity === 'isDeleted' }"
         @click="$emit('filterHandler', 'isDeleted')"

@@ -8,12 +8,12 @@ const buttonClick = (state, todo) => {
 </script>
 
 <template>
-  <div class="btnBox" v-show="!todo.isDeleted">
+  <div class="min-w-30 flex justify-center" v-show="!todo.isDeleted">
     <button
       @click="buttonClick('edit', todo)"
       type="button"
       title="edit"
-      class="mx-1 p-2 rounded cursor-pointer bg-gray-600 transition-all duration-600 hover:bg-gray-500"
+      class="maxsm:ml-1 ml-2 p-2 rounded cursor-pointer bg-gray-600 transition-all duration-600 hover:bg-gray-500"
     >
       <Icon icon="tabler:edit" />
     </button>
@@ -22,7 +22,7 @@ const buttonClick = (state, todo) => {
       @click="buttonClick('completed', todo)"
       type="button"
       title="completed"
-      class="mx-1 p-2 rounded cursor-pointer bg-teal-600 transition-all duration-600 hover:bg-teal-700"
+      class="maxsm:ml-1 ml-2 p-2 rounded cursor-pointer bg-teal-600 transition-all duration-600 hover:bg-teal-700"
     >
       <Icon icon="tabler:check" />
     </button>
@@ -30,7 +30,7 @@ const buttonClick = (state, todo) => {
       @click="buttonClick('delete', todo)"
       type="button"
       title="delete"
-      class="mx-1 p-2 rounded cursor-pointer bg-red-500 transition-all duration-600 hover:bg-red-600"
+      class="maxsm:ml-1 ml-2 p-2 rounded cursor-pointer bg-red-500 transition-all duration-600 hover:bg-red-600"
     >
       <Icon icon="tabler:minus" />
     </button>

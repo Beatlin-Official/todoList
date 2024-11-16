@@ -3,14 +3,17 @@ import { ref, onMounted, computed } from "vue";
 import { Icon } from "@iconify/vue";
 import { Pokedex } from "pokeapi-js-wrapper";
 import { RouterLink } from "vue-router";
-const loading = ref(true);
+import { storeToRefs } from "pinia";
+import { useLoadingStore } from "@/stores/loading";
+const loadingStore = useLoadingStore();
+const { loading } = storeToRefs(loadingStore);
 const P = new Pokedex();
 const interval = {
   offset: 0,
   limit: 100,
 };
 
-const totalPokemons = 900;
+const totalPokemons = ref(900);
 const text = ref(null);
 const pokemons = ref([]);
 const curPage = ref(1);
@@ -51,8 +54,9 @@ const nextPage = () => {
   if (curPage.value < totalPages.value) curPage.value++;
 };
 onMounted(async () => {
+  loading.value = true;
   async function getData() {
-    if (pokemons.value.length >= totalPokemons) return false;
+    if (pokemons.value.length >= totalPokemons.value) return false;
     const arr = Array.from({ length: 100 }, (_, i) => i + 1 + interval.offset);
     const res = await P.getPokemonByName(arr);
     return res;
@@ -60,7 +64,7 @@ onMounted(async () => {
   async function pushData(res) {
     pokemons.value.push(...res);
     loading.value = false;
-    return pokemons.value.length < totalPokemons;
+    return pokemons.value.length < totalPokemons.value;
   }
   async function updateInterval() {
     interval.offset += interval.limit;
@@ -89,23 +93,25 @@ onMounted(async () => {
     <h1 class="text-3xl font-medium pb-2 mb-5 border-b border-gray-700">
       Handbook
     </h1>
-    <div class="mr-auto flex items-center mb-5">
+    <div class="maxxsm:w-full maxxsm:mr-0 mr-auto flex items-center mb-5">
       <input
         type="text"
         placeholder="Search Pokemon"
         v-model="text"
-        class="block mr-2 px-2 py-1 rounded text-gray-900"
+        class="maxxsm:w-full maxxsm:mr-0 block mr-2 px-2 py-1 rounded text-gray-900"
       />
     </div>
     <div>
-      <div class="grid grid-cols-4 grid-rows-5 gap-2 min-h-80">
+      <div
+        class="maxsm:gap-1 maxxsm:grid-cols-2 grid grid-cols-4 grid-rows-5 gap-2 min-h-80"
+      >
         <div
           class="border border-gray-500 rounded hover:bg-green-800 hover:border-green-500 transition-all"
           v-for="pokemon of getPageData"
           :key="pokemon.id"
         >
           <RouterLink
-            class="flex flex-col h-full justify-center items-center p-3"
+            class="maxsm:px-1 flex flex-col h-full justify-center items-center p-3"
             :to="{
               name: 'Pokemon',
               params: { slug: `${pokemon.id}` },
@@ -122,7 +128,7 @@ onMounted(async () => {
                 <div class="rounded-full bg-slate-700 h-10 w-10"></div>
               </div>
             </div>
-            <div class="text-center pt-2">{{ pokemon.name }}</div>
+            <div class="maxsm:text-xs text-center pt-2">{{ pokemon.name }}</div>
           </RouterLink>
         </div>
         <div v-if="getPageData.length == 0">

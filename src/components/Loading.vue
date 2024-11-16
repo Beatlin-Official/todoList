@@ -1,12 +1,19 @@
 <script setup>
-import { ref } from "vue";
-const props = defineProps["loading"];
+import { useLoadingStore } from "@/stores/loading";
+import { storeToRefs } from "pinia";
+const loadingStore = useLoadingStore();
+const { loading } = storeToRefs(loadingStore);
 </script>
+
 <template>
   <Transition name="loading">
     <div v-show="loading" class="loadingBox">
       <p>Loading</p>
-      <img src="@/assets/loading.gif" alt="loading" />
+      <img
+        class="object-contain w-12"
+        src="@/assets/loading.gif"
+        alt="loading"
+      />
     </div>
   </Transition>
 </template>
