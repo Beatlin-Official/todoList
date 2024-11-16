@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- 解決spa跳轉不是真跳轉問題 -->
+    <script type="text/javascript">
+        var pathSegmentsToKeep = 1; //如果是不是自定義的網域就把0改成1
+
+        var l = window.location;
+        l.replace(
+            l.protocol +
+            "//" +
+            l.hostname +
+            (l.port ? ":" + l.port : "") +
+            l.pathname
+                .split("/")
+                .slice(0, 1 + pathSegmentsToKeep)
+                .join("/") +
+            "/?/" +
+            l.pathname
+                .slice(1)
+                .split("/")
+                .slice(pathSegmentsToKeep)
+                .join("/")
+                .replace(/&/g, "~and~") +
+            (l.search ? "&" + l.search.slice(1).replace(/&/g, "~and~") : "") +
+            l.hash
+        );
+    </script>
+    <!-- 結束 -->
+    <meta charset="UTF-8">
+    <link rel="icon" href="/todoList/favicon.ico">
+    <link rel="manifest" href="/todoList/manifest.json">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Dooo</title>
+    <script type="module" crossorigin src="/todoList/assets/index-DGutPxvH.js"></script>
+    <link rel="stylesheet" crossorigin href="/todoList/assets/index-0fN8lICS.css">
+</head>
+
+<body>
+    <div id="app"></div>
+</body>
+
+</html>
