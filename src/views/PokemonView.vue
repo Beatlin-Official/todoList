@@ -78,8 +78,8 @@ watch(
 );
 </script>
 
-<template v-if="pokemon">
-  <main>
+<template>
+  <main v-if="pokemon">
     <div>
       <div class="text-center mb-5 border-b border-gray-700">
         <p class="italic text-stone-600">#{{ pokemon.id }}</p>
