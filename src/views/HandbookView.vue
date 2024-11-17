@@ -140,46 +140,46 @@ onMounted(async () => {
       id="pageBox"
       class="flex mx-auto mt-10 w-full justify-center items-center"
     >
-      <div class="max-w-24 w-full flex justify-center">
+      <div class="maxsm:max-w-10 max-w-24 w-full flex justify-center">
         <button
           @click="curPage = 1"
           v-show="curPage !== 1"
-          class="mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
+          class="maxsm:mx-0 mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
         >
           <Icon icon="tabler:square-chevrons-left" />
         </button>
         <button
           @click="prevPage"
           v-show="curPage !== 1"
-          class="mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
+          class="maxxsm:hidden maxsm:mx-0 maxsm:ml-1 mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
         >
           <Icon icon="tabler:square-chevron-left" />
         </button>
       </div>
-      <div id="pageList" class="min-w-56 flex justify-center">
+      <div id="pageList" class="maxsm:min-w-0 min-w-56 flex justify-center">
         <button
           id="pageItem"
           v-for="page of pageNum"
           :key="page"
           @click="goToPage(page)"
           :class="{ 'bg-gray-700': page === curPage }"
-          class="min-w-8 mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 text-xs font-extralight"
+          class="maxsm:mr-1 maxsm:mx-0 maxsm:last:mr-0 min-w-8 mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 text-xs font-extralight"
         >
           {{ page }}
         </button>
       </div>
-      <div class="max-w-24 w-full flex justify-center">
+      <div class="maxsm:max-w-10 max-w-24 w-full flex justify-center">
         <button
           @click="nextPage"
           v-show="curPage !== totalPages && totalPages !== 0"
-          class="mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
+          class="maxxsm:hidden maxsm:mx-0 maxsm:mr-1 mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
         >
           <Icon icon="tabler:square-chevron-right" />
         </button>
         <button
           @click="curPage = totalPages"
           v-show="curPage !== totalPages && totalPages !== 0"
-          class="mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 opacity-45 hover:border-gray-700 hover:opacity-100"
+          class="maxsm:mx-0 mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 opacity-45 hover:border-gray-700 hover:opacity-100"
         >
           <Icon icon="tabler:square-chevrons-right" />
         </button>
