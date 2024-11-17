@@ -7,7 +7,6 @@ import { useLoadingStore } from "@/stores/loading";
 import { storeToRefs } from "pinia";
 const loadingStore = useLoadingStore();
 const { loading } = storeToRefs(loadingStore);
-
 const route = useRoute();
 const id = ref(0);
 const pokemon = ref({});
@@ -79,8 +78,8 @@ watch(
 </script>
 
 <template>
-  <main v-if="pokemon">
-    <div>
+  <main>
+    <div v-if="pokemon">
       <div class="text-center mb-5 border-b border-gray-700">
         <p class="italic text-stone-600">#{{ pokemon.id }}</p>
         <h1
@@ -89,19 +88,19 @@ watch(
         {{ upperName( pokemon.name ) }}
       </h1>
       </div>
-      <div class="flex justify-center mb-5">
-        <div class="max-w-48 max-h-48">
+      <div class="flex justify-center mb-5 mx-auto max-w-64 h-32">
+        <div class="flex justify-center w-full h-full">
           <img
-            class="object-contain h-full"
+            class="m-auto"
             :src="pokemon.sprites.other.showdown.front_default"
             :alt="pokemon.name"
             v-if="pokemon.sprites"
           />
         </div>
 
-        <div class="max-w-48 max-h-48">
+        <div class="flex justify-center w-full h-full">
           <img
-            class="object-contain h-full"
+            class="m-auto"
             :src="pokemon.sprites.other.showdown.back_default"
             :alt="pokemon.name"
             v-if="pokemon.sprites"
@@ -139,11 +138,12 @@ watch(
           </table>
       </div>
     </div>
+    <div v-else> loading data</div>
     <div
       id="pageBox"
-      class="flex mx-auto mt-10 w-full justify-center items-center"
+      class="maxxsm:flex-col maxxsm:mt-5 flex mx-auto mt-10 w-full justify-center items-center"
     >
-      <div class="max-w-40 w-full mr-2" v-if="prevPokemon && prevPokemon.id">
+      <div class="maxxsm:mr-0 maxxsm:mb-2 max-w-48 w-full mr-2" v-if="prevPokemon && prevPokemon.id">
         <RouterLink :to="{ name:'Pokemon',params:{slug:`${Number(id)-1}`} }">
         <button
           class="w-full flex justify-between items-center mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
@@ -153,7 +153,7 @@ watch(
         </button>
       </RouterLink>
       </div>
-      <div class="max-w-40 w-full " v-if="nextPokemon && nextPokemon.id">
+      <div class="max-w-48 w-full " v-if="nextPokemon && nextPokemon.id">
         <RouterLink :to="{ name:'Pokemon',params:{slug:`${Number(id)+1}`} }">
         <button
           class="w-full flex justify-between items-center mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"

@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors:{
-        normal:'#262626',
+        normal:'#4b5563',
         fire:'#ef4444',
         fighting:'#f97316',
         water:'#3b82f6',
@@ -23,7 +23,7 @@ export default {
         dragon:'#d946ef',
         ghost:'#86198f',
         dark:'#a21caf',
-        steel:'#e2e8f0',
+        steel:'#475569',
         fairy:'#fb7185',
         stellar:'#34d399',
       },
