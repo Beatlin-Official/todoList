@@ -68,13 +68,9 @@ onBeforeMount(() => {
   UpdateData();
 });
 
-watch(
-  route,
-  () => {
-    UpdateData();
-  },
-  { immediate: true }
-);
+watch(route, () => {
+  UpdateData();
+});
 </script>
 
 <template>
@@ -94,8 +90,11 @@ watch(
             class="m-auto"
             :src="pokemon.sprites.other.showdown.front_default"
             :alt="pokemon.name"
-            v-if="pokemon.sprites"
+            v-if="!loading"
           />
+          <div v-else class="animate-pulse flex justify-center space-x-4 w-full h-full">
+            <div class="rounded-full bg-slate-700 h-20 w-20 m-auto"></div>
+          </div>
         </div>
 
         <div class="flex justify-center w-full h-full">
@@ -103,10 +102,10 @@ watch(
             class="m-auto"
             :src="pokemon.sprites.other.showdown.back_default"
             :alt="pokemon.name"
-            v-if="pokemon.sprites"
+            v-if="!loading"
           />
-          <div v-else class="animate-pulse flex space-x-4">
-            <div class="rounded-full bg-slate-700 h-10 w-10"></div>
+          <div v-else class="animate-pulse flex justify-center space-x-4 w-full h-full">
+            <div class="rounded-full bg-slate-700 h-20 w-20 m-auto"></div>
           </div>
         </div>
       </div>
