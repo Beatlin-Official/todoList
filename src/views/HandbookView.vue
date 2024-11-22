@@ -90,99 +90,106 @@ onMounted(async () => {
 
 <template>
   <main>
-    <h1 class="text-3xl font-medium pb-2 mb-5 border-b border-gray-700">
-      Handbook
-    </h1>
-    <div class="maxxsm:w-full maxxsm:mr-0 mr-auto flex items-center mb-5">
-      <input
-        type="text"
-        placeholder="Search Pokemon"
-        v-model="text"
-        class="maxxsm:w-full maxxsm:mr-0 block mr-2 px-2 py-1 rounded text-gray-900"
-      />
-    </div>
-    <div>
-      <div
-        class="maxsm:gap-1 maxxsm:grid-cols-2 grid grid-cols-4 grid-rows-5 gap-2 min-h-80"
-      >
+    <div class="handBox">
+      <h1 class="text-3xl font-medium pb-2 mb-5 border-b border-gray-700">
+        Handbook
+      </h1>
+      <div class="maxxsm:w-full maxxsm:mr-0 mr-auto flex items-center mb-5">
+        <input
+          type="text"
+          placeholder="Search Pokemon"
+          v-model="text"
+          class="maxxsm:w-full maxxsm:mr-0 block mr-2 px-2 py-1 rounded text-gray-900"
+        />
+      </div>
+      <div>
         <div
-          class="border border-gray-500 rounded hover:bg-green-800 hover:border-green-500 transition-all"
-          v-for="pokemon of getPageData"
-          :key="pokemon.id"
+          class="maxsm:gap-1 maxxsm:grid-cols-2 grid grid-cols-4 grid-rows-5 gap-2 min-h-80"
         >
-          <RouterLink
-            class="maxsm:px-1 flex flex-col h-full justify-center items-center p-3"
-            :to="{
-              name: 'Pokemon',
-              params: { slug: `${pokemon.id}` },
-            }"
+          <div
+            class="border border-gray-500 rounded hover:bg-green-800 hover:border-green-500 transition-all"
+            v-for="pokemon of getPageData"
+            :key="pokemon.id"
           >
-            <div class="max-h-12 mx-auto mb-auto">
-              <img
-                class="object-contain max-h-12 mx-auto"
-                :src="pokemon.sprites.other.showdown.front_default"
-                :alt="pokemon.name"
-              />
-
-              <div class="animate-pulse" v-if="!pokemon">
-                <div class="rounded-full bg-slate-700 h-10 w-10"></div>
+            <RouterLink
+              class="maxsm:px-1 flex flex-col h-full justify-center items-center p-3"
+              :to="{
+                name: 'Pokemon',
+                params: { slug: `${pokemon.id}` },
+              }"
+            >
+              <div class="max-h-12 mx-auto mb-auto">
+                <img
+                  class="object-contain max-h-12 mx-auto"
+                  :src="pokemon.sprites.other.showdown.front_default"
+                  :alt="pokemon.name"
+                  v-if="getPageData"
+                />
+                <div
+                  v-else
+                  class="animate-pulse flex justify-center space-x-4 w-full h-full"
+                >
+                  <div class="rounded-full bg-slate-700 h-14 w-14 m-auto"></div>
+                </div>
               </div>
-            </div>
-            <div class="maxsm:text-xs text-center pt-2">{{ pokemon.name }}</div>
-          </RouterLink>
+              <div class="maxsm:text-xs text-center pt-2">
+                {{ pokemon.name }}
+              </div>
+            </RouterLink>
+          </div>
+          <div v-if="getPageData.length == 0">
+            <p>No data</p>
+          </div>
         </div>
-        <div v-if="getPageData.length == 0">
-          <p>No data</p>
+      </div>
+      <div
+        id="pageBox"
+        class="flex mx-auto mt-10 w-full justify-center items-center"
+      >
+        <div class="maxsm:max-w-10 max-w-24 w-full flex justify-center">
+          <button
+            @click="curPage = 1"
+            v-show="curPage !== 1"
+            class="maxsm:mx-0 mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
+          >
+            <Icon icon="tabler:square-chevrons-left" />
+          </button>
+          <button
+            @click="prevPage"
+            v-show="curPage !== 1"
+            class="maxsm:hidden maxsm:ml-1 mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
+          >
+            <Icon icon="tabler:square-chevron-left" />
+          </button>
         </div>
-      </div>
-    </div>
-    <div
-      id="pageBox"
-      class="flex mx-auto mt-10 w-full justify-center items-center"
-    >
-      <div class="maxsm:max-w-10 max-w-24 w-full flex justify-center">
-        <button
-          @click="curPage = 1"
-          v-show="curPage !== 1"
-          class="maxsm:mx-0 mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
-        >
-          <Icon icon="tabler:square-chevrons-left" />
-        </button>
-        <button
-          @click="prevPage"
-          v-show="curPage !== 1"
-          class="maxxsm:hidden maxsm:mx-0 maxsm:ml-1 mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
-        >
-          <Icon icon="tabler:square-chevron-left" />
-        </button>
-      </div>
-      <div id="pageList" class="maxsm:min-w-0 min-w-56 flex justify-center">
-        <button
-          id="pageItem"
-          v-for="page of pageNum"
-          :key="page"
-          @click="goToPage(page)"
-          :class="{ 'bg-gray-700': page === curPage }"
-          class="maxsm:mr-1 maxsm:mx-0 maxsm:last:mr-0 min-w-8 mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 text-xs font-extralight"
-        >
-          {{ page }}
-        </button>
-      </div>
-      <div class="maxsm:max-w-10 max-w-24 w-full flex justify-center">
-        <button
-          @click="nextPage"
-          v-show="curPage !== totalPages && totalPages !== 0"
-          class="maxxsm:hidden maxsm:mx-0 maxsm:mr-1 mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
-        >
-          <Icon icon="tabler:square-chevron-right" />
-        </button>
-        <button
-          @click="curPage = totalPages"
-          v-show="curPage !== totalPages && totalPages !== 0"
-          class="maxsm:mx-0 mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 opacity-45 hover:border-gray-700 hover:opacity-100"
-        >
-          <Icon icon="tabler:square-chevrons-right" />
-        </button>
+        <div id="pageList" class="maxsm:min-w-0 min-w-56 flex justify-center">
+          <button
+            id="pageItem"
+            v-for="page of pageNum"
+            :key="page"
+            @click="goToPage(page)"
+            :class="{ 'bg-gray-700': page === curPage }"
+            class="maxsm:mr-1 maxsm:mx-0 maxsm:last:mr-0 min-w-8 mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 text-xs font-extralight"
+          >
+            {{ page }}
+          </button>
+        </div>
+        <div class="maxsm:max-w-10 max-w-24 w-full flex justify-center">
+          <button
+            @click="nextPage"
+            v-show="curPage !== totalPages && totalPages !== 0"
+            class="maxsm:hidden maxsm:mr-1 mx-1 p-2 rounded cursor-pointer border border-gray-600 opacity-45 transition-all duration-600 hover:bg-gray-700 hover:border-gray-700 hover:opacity-100"
+          >
+            <Icon icon="tabler:square-chevron-right" />
+          </button>
+          <button
+            @click="curPage = totalPages"
+            v-show="curPage !== totalPages && totalPages !== 0"
+            class="maxsm:mx-0 mx-1 p-2 rounded cursor-pointer border border-gray-600 transition-all duration-600 hover:bg-gray-700 opacity-45 hover:border-gray-700 hover:opacity-100"
+          >
+            <Icon icon="tabler:square-chevrons-right" />
+          </button>
+        </div>
       </div>
     </div>
   </main>

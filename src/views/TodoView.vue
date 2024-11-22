@@ -125,6 +125,7 @@ const filteredTodos = computed(() => {
 });
 </script>
 
+
 <template>
   <main>
     <div class="todoBox">
@@ -178,6 +179,7 @@ const filteredTodos = computed(() => {
 </template>
 
 <style>
+.slide-move,
 .slide-leave-active,
 .slide-enter-active {
   transition: all 0.5s ease;
@@ -189,5 +191,8 @@ const filteredTodos = computed(() => {
 .slide-leave-to {
   transform: translateY(-20px);
   opacity: 0;
+}
+.slide-leave-active {
+  position: absolute;
 }
 </style>

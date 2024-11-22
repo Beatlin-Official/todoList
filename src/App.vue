@@ -1,5 +1,4 @@
 <script setup>
-import { RouterLink, RouterView } from "vue-router";
 import Loading from "@/components/Loading.vue";
 </script>
 
