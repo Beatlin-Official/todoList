@@ -6,7 +6,7 @@ import HandbookView from '../views/HandbookView.vue'
 import PokemonListView from '../views/PokemonListView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 import TestE from '@/views/TestE.vue'
-import TestDev from '@/views/TestDev.vue'
+import Member from '@/views/MemberView.vue'
 import Login from '@/views/LoginView.vue'
 import Dashboard from '@/views/DashboardView.vue'
 import Post from '@/views/PostView.vue'
@@ -45,9 +45,9 @@ const router = createRouter({
       component: TestE,
     },
     {
-      path: '/test/:id',
-      name: 'dev',
-      component: TestDev,
+      path: '/member/',
+      name: 'Member',
+      component: Member,
       children:[
         {
           path:'dashboard',

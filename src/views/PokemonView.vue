@@ -9,7 +9,7 @@ const loadingStore = useLoadingStore();
 const { loading } = storeToRefs(loadingStore);
 const route = useRoute();
 const id = ref(0);
-const pokemon = ref({});
+const pokemon = ref(null);
 const prevPokemon = ref({});
 const nextPokemon = ref({});
 const P = new Pokedex();
@@ -61,6 +61,7 @@ const UpdateData = async () => {
     loading.value = false;
   } catch (error) {
     console.log("get data error", error);
+    pokemon.value = {};
   }
 };
 onMounted(() => {
@@ -74,7 +75,7 @@ watch(route, () => {
 <template>
   <main>
     <div class="handBox">
-      <template v-if="id!==0">
+      <template v-if="pokemon">
         <div class="text-center mb-5 border-b border-gray-700">
           <p class="italic text-stone-600">#{{ pokemon.id }}</p>
           <h1

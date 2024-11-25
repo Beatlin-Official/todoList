@@ -3,7 +3,6 @@ import { computed, ref } from 'vue';
 
 export const useAuthStore = defineStore('auth',()=>{
     const isAuthenticated = ref(false)
-    const username = ref(null)
     const welcomeMessage = ref(null)
     const welcome = computed(() => {
         if(isAuthenticated.value){
@@ -11,17 +10,17 @@ export const useAuthStore = defineStore('auth',()=>{
         } 
         return welcomeMessage.value = 'Hi New Pokémon Trainer'
     })
-    const login = () => {
+    const loggedIn = () => {
         isAuthenticated.value = true
     }
-    const logout = () => {
+    const islogout = () => {
         isAuthenticated.value = false
     }
 
     return{
         isAuthenticated,
-        login,
-        logout,
+        loggedIn,
+        islogout,
         welcome
     }
 })

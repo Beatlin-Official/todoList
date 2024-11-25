@@ -64,7 +64,7 @@ onMounted(async () => {
   async function pushData(res) {
     pokemons.value.push(...res);
     loading.value = false;
-    return pokemons.value.length < totalPokemons.value;
+    return true;
   }
   async function updateInterval() {
     interval.offset += interval.limit;
@@ -72,9 +72,9 @@ onMounted(async () => {
   try {
     let shouldContinue = true;
     while (shouldContinue) {
-      const res = await getData();
+      const data = await getData();
       if (shouldContinue) {
-        await pushData(res);
+        await pushData(data);
         await updateInterval();
       }
       if (!shouldContinue) {
@@ -123,17 +123,19 @@ onMounted(async () => {
                   class="object-contain max-h-12 mx-auto"
                   :src="pokemon.sprites.other.showdown.front_default"
                   :alt="pokemon.name"
-                  v-if="getPageData"
+                  v-lazy="pokemon.sprites.other.showdown.front_default"
                 />
-                <div
-                  v-else
-                  class="animate-pulse flex justify-center space-x-4 w-full h-full"
-                >
-                  <div class="rounded-full bg-slate-700 h-14 w-14 m-auto"></div>
+                <div class="loading animate-pulse space-x-4 w-full h-full">
+                  <div class="rounded-full bg-slate-700 h-12 w-12 m-auto"></div>
                 </div>
               </div>
               <div class="maxsm:text-xs text-center pt-2">
-                {{ pokemon.name }}
+                <span v-if="pokemon">{{ pokemon.name }}</span>
+
+                <div
+                  v-else
+                  class="loading animate-pulse w-full h-2 mt-2 bg-slate-700 rounded"
+                ></div>
               </div>
             </RouterLink>
           </div>
