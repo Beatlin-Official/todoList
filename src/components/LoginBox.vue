@@ -8,10 +8,12 @@ const { isAuthenticated } = storeToRefs(authStore);
 const { loggedIn, logout, welcome } = authStore;
 const username = ref("ssss");
 const password = ref("ssss");
-const api = ref("http://localhost:3000/api/auth/");
+const api = import.meta.env.VITE_TODOAPI_AUTH_URI;
+console.log(api);
+
 const register = async () => {
   try {
-    const res = await fetch(`${api.value}register`, {
+    const res = await fetch(`${api}/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
