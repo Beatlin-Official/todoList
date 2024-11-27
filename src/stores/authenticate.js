@@ -8,7 +8,7 @@ export const useAuthStore = defineStore('auth',()=>{
         if(isAuthenticated.value){
             return welcomeMessage.value = `Welcome back ${username.value}`
         } 
-        return welcomeMessage.value = 'Hi New Pokémon Trainer'
+        return welcomeMessage.value = 'Hi! New Pokémon Trainer'
     })
     const loggedIn = () => {
         isAuthenticated.value = true
