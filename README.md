@@ -2,7 +2,7 @@
 
 ## 專案亮點
 ### 1. 每日訓練清單
-![每日訓練清單](public\todoPreview.gif)
+![每日訓練清單](.\public\todoPreview.gif)
 * 能新增、修改、刪除事項
   - [x] 輸入項防止只有空白內容、去除前後空白字元
   - [x] 每筆事項皆能更改狀態
@@ -14,7 +14,7 @@
 * 與API串接
   
 ### 2. 寶可夢圖鑑
-![寶可夢圖鑑](public\handbookPreview.gif)
+![寶可夢圖鑑](.\public\handbookPreview.gif)
 * 關鍵詞搜尋
 * 採用Lazyload優化效能
 * 分頁顯示內容
@@ -26,7 +26,7 @@
   - [ ] 能隨機切換
   
 ### 3. 登入系統
-![登入系統](public\loginPreview.gif)
+![登入系統](.\public\loginPreview.gif)
 * 會員註冊、會員登入
 * 流程錯誤訊息判斷
 * 與API串接
