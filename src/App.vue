@@ -1,12 +1,11 @@
 <script setup>
-import { ref } from "vue";
+import { RouterLink, RouterView } from "vue-router";
 import { useAuthStore } from "./stores/authenticate";
 import { storeToRefs } from "pinia";
 import { Icon } from "@iconify/vue";
-const authStore = useAuthStore();
-const { isAuthenticated } = storeToRefs(authStore);
 import Loading from "@/components/Loading.vue";
-const userName = ref("Beam");
+const authStore = useAuthStore();
+const { isAuthenticated, storageName } = storeToRefs(authStore);
 </script>
 
 <template>
@@ -35,8 +34,8 @@ const userName = ref("Beam");
             >
               <button class="flex jstify-center items-center" title="login">
                 <Icon icon="tabler:user" /><span class="ml-1">
-                  {{ userName }}</span
-                >
+                  {{ storageName }}
+                </span>
               </button>
             </RouterLink>
 

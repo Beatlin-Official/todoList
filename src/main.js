@@ -9,8 +9,8 @@ import VueLazyload from "vue-lazyload"
 const pinia = createPinia()
 const app = createApp(App)
 
-app.use(router)
 app.use(pinia)
+app.use(router)
 app.use(VueLazyload, {
     adapter: {
       loaded({ el }) {

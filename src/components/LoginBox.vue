@@ -1,15 +1,19 @@
 <script setup>
-/*get env url */
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/stores/authenticate";
+import { useLoadingStore } from "@/stores/loading";
 import { Icon } from "@iconify/vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
 const authStore = useAuthStore();
+const loadingStore = useLoadingStore();
 const { isAuthenticated } = storeToRefs(authStore);
-const { loggedIn, logout, welcome } = authStore;
-const email = ref("ssss@yahoo.com.tw");
-const password = ref("11111111");
-const username = ref("beam");
+const { loggedIn } = authStore;
+const { loading } = storeToRefs(loadingStore);
+const email = ref("");
+const password = ref("");
+const username = ref("");
 const register = ref(false);
 const noticeBox = ref({
   text: null,
@@ -18,29 +22,37 @@ const noticeBox = ref({
 });
 const api = import.meta.env.VITE_TODOAPI_AUTH_URI;
 const submitHandler = async (e) => {
-  console.log(e.target.name);
+  let msg = "Login success!";
+  let state = e.target.name;
+  let userData = {
+    email: email.value,
+    password: password.value,
+  };
+  if (register.value) {
+    userData.name = username.value;
+    msg = "Register success!";
+  }
   try {
-    const res = await fetch(`${api}/register`, {
+    const res = await fetch(`${api}/${state}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        email: email.value,
-        password: password.value,
-        name: username.value,
-      }),
+      body: JSON.stringify(userData),
     });
     if (!res.ok) {
       const errorBody = await res.text();
       const errMessage = JSON.parse(errorBody);
       throw new Error(errMessage.error);
     }
-    const dataToken = await res.json();
-    localStorage.setItem("login", dataToken.token);
-    noticeHandler("Register success!", "success");
+    const data = await res.json();
+    console.log(data);
+    localStorage.setItem("login", data.token);
+    localStorage.setItem("name", data.user.name);
+    noticeHandler(msg, "success");
   } catch (error) {
-    noticeHandler(error.message, "error");
+    msg = error.message;
+    noticeHandler(msg, "error");
   }
 };
 const noticeHandler = (text, state) => {
@@ -49,8 +61,20 @@ const noticeHandler = (text, state) => {
   noticeBox.value.show = true;
   setTimeout(() => {
     noticeBox.value.show = false;
+    loading.value = true;
   }, 2000);
+  if (state === "success") {
+    setTimeout(() => {
+      isAuthenticated.value = true;
+      loggedIn();
+      router.push({ name: "Dashboard" });
+    }, 2800);
+  }
 };
+
+const welcome = computed(() => {
+  return register.value ? "Hi! New Pokémon Trainer" : "Welcome back";
+});
 </script>
 
 <template>
@@ -81,7 +105,12 @@ const noticeHandler = (text, state) => {
           </h1>
         </div>
         <div>
-          <form v-if="!register" @submit.prevent="submitHandler" name="login">
+          <form
+            v-if="!register"
+            @submit.prevent="submitHandler"
+            name="login"
+            autocomplete="on"
+          >
             <div class="pb-4">
               <label for="email">Email</label>
               <input
@@ -99,6 +128,7 @@ const noticeHandler = (text, state) => {
                 type="password"
                 id="password"
                 class="maxsm:mr-1 maxxsm:grow block mr-2 px-2 py-1 rounded text-gray-900"
+                autocomplete="current-password"
                 required
               />
             </div>
@@ -143,6 +173,7 @@ const noticeHandler = (text, state) => {
                 type="password"
                 id="password"
                 class="maxsm:mr-1 maxxsm:grow block mr-2 px-2 py-1 rounded text-gray-900"
+                autocomplete="current-password"
                 required
               />
             </div>
@@ -173,10 +204,6 @@ const noticeHandler = (text, state) => {
           </div>
         </div>
       </div>
-    </div>
-    <div v-if="isAuthenticated">
-      <p>Username: {{ username }}</p>
-      <button @click="logout">Logout</button>
     </div>
   </div>
 </template>

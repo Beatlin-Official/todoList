@@ -10,8 +10,8 @@ import Member from '@/views/MemberView.vue'
 import Login from '@/views/LoginView.vue'
 import Dashboard from '@/views/DashboardView.vue'
 import Post from '@/views/PostView.vue'
-const isAuthenticated = ref(false)
-
+import { useAuthStore } from '@/stores/authenticate';
+import { storeToRefs } from 'pinia';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -74,7 +74,10 @@ const router = createRouter({
   ]
 })
  
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to, from) => {  
+  const authStore = useAuthStore();
+  const { isAuthenticated } = storeToRefs(authStore);
+  
   if(!isAuthenticated.value && to.name =='Dashboard'){
       return  { name: 'Login'}
   }
