@@ -60,7 +60,7 @@ const UpdateData = async () => {
     await getData(pokemonId);
     loading.value = false;
   } catch (error) {
-    console.log("get data error", error);
+    console.error("get data error", error);
     pokemon.value = {};
   }
 };
